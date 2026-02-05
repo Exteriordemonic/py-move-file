@@ -17,23 +17,26 @@ def move_file(command: str) -> None:
 
         _, source, target = parts
 
-        if source == target:
-            return
+        source_abs = os.path.abspath(source)
 
-        if not os.path.exists(source):
-            raise OSError("Source file does not exist")
-
-        # Determine if target is a directory or a file
         if target.endswith(os.path.sep) or (
             os.path.exists(target) and os.path.isdir(target)
         ):
-            # Target is a directory, move source into it with original filename
-            target_path = target
-            target = os.path.join(target, os.path.basename(source))
+            final_dest = os.path.join(target, os.path.basename(source))
         else:
-            target_path = os.path.dirname(target)
-        if not os.path.exists(target_path):
-            os.makedirs(target_path)
+            final_dest = target
+
+        dest_abs = os.path.abspath(final_dest)
+
+        if source_abs == dest_abs:
+            return
+
+        if not os.path.exists(source_abs):
+            raise OSError("Source file does not exist")
+
+        dest_dir = os.path.dirname(dest_abs)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
 
         with open(source, "r") as file_in, open(target, "w") as file_out:
             file_out.write(file_in.read())
