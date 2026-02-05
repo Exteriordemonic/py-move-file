@@ -5,7 +5,7 @@ def move_file(command: str) -> None:
     try:
         if not isinstance(command, str):
             raise ValueError(
-                "Input must be a string formatted as: 'cp <source> <target>'"
+                "Input must be a string formatted as: 'mv <source> <target>'"
             )
 
         parts = command.strip().split()
@@ -47,4 +47,4 @@ def move_file(command: str) -> None:
             e,
         )
     except OSError as e:
-        print(f"Error processing file copy: {e}. Command: '{command}'")
+        print(f"Error processing file moving: {e}. Command: '{command}'")
