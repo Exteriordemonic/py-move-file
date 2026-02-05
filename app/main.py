@@ -12,7 +12,7 @@ def move_file(command: str) -> None:
         if len(parts) != 3 or parts[0] != "mv":
             raise ValueError(
                 f"Invalid command: '{command}'. Expected: "
-                "'cp <source> <target>'"
+                "'mv <source> <target>'"
             )
 
         _, source, target = parts
@@ -23,7 +23,15 @@ def move_file(command: str) -> None:
         if not os.path.exists(source):
             raise OSError("Source file does not exist")
 
-        target_path = "/".join(target.split("/")[:-1])
+        # Determine if target is a directory or a file
+        if target.endswith(os.path.sep) or (
+            os.path.exists(target) and os.path.isdir(target)
+        ):
+            # Target is a directory, move source into it with original filename
+            target_path = target
+            target = os.path.join(target, os.path.basename(source))
+        else:
+            target_path = os.path.dirname(target)
         if not os.path.exists(target_path):
             os.makedirs(target_path)
 
@@ -34,12 +42,9 @@ def move_file(command: str) -> None:
 
     except ValueError as e:
         print(
-            "Invalid input. Expected format: 'cp <source> <target>'. "
+            "Invalid input. Expected format: 'mv <source> <target>'. "
             f"Got: '{command}'.",
             e,
         )
     except OSError as e:
         print(f"Error processing file copy: {e}. Command: '{command}'")
-
-
-move_file("mv text.txt first_dir/second_dir/third_dir/file2.txt")
